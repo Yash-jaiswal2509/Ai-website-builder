@@ -1,13 +1,22 @@
-import { Button } from "@/components/ui/button";
+import { caller, getQueryClient, trpc } from "@/trpc/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { Suspense } from "react";
+import { Client } from "./client";
 
-const Page = () => {
+const Page = async () => {
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(trpc.createAI.queryOptions({ text: "yash" }));
+
   return (
-    <div className="font-mono text-rose-500">
-      <Button variant="destructive">Click me</Button>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<p>Loading</p>}>
+        <Client />
+      </Suspense>
+    </HydrationBoundary>
   )
 }
 
 export default Page;
 
-// 34 minutes 
+// 34 minutes
+// 1 hour 10 minutes 
