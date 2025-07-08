@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (ou9rdf2kfnbg6n05e78w) or template name (ai-website-builder-yash-test-3) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("ai-website-builder-yash-test-3") # Sync sandbox
+# sandbox = await AsyncSandbox.create("ai-website-builder-yash-test-3") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('ai-website-builder-yash-test-3')
+
+team_id = "d707cc4f-d0ac-4350-889e-e5bf9d2a3180"
+start_cmd = "/compile_page.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "ai-website-builder-yash-test-3"
+template_id = "ou9rdf2kfnbg6n05e78w"
