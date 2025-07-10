@@ -1,0 +1,10 @@
+package.json
+package-lock.json
+.env
+**/.git
+**/.svn
+**/.hg
+**/.git
+**/.svn
+**/.hg
+**/node_modules
