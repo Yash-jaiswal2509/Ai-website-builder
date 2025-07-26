@@ -9,19 +9,26 @@ import ProjectMessageLoading from './project-message-loading';
 interface Props {
   projectId: string;
   activeFragment: Fragment | null;
-  setActiveFragment: (fragment: Fragment | null) => void
+  setActiveFragment: (fragment: Fragment | null) => void;
 }
 
-const ProjectMessageContainer = ({ projectId, activeFragment, setActiveFragment }: Props) => {
+const ProjectMessageContainer = ({
+  projectId,
+  activeFragment,
+  setActiveFragment,
+}: Props) => {
   const trpc = useTRPC();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { data: messages } = useSuspenseQuery(
-    trpc.messages.getMany.queryOptions({
-      projectId: projectId,
-    }, {
-      refetchInterval: 5000
-    }),
+    trpc.messages.getMany.queryOptions(
+      {
+        projectId: projectId,
+      },
+      {
+        refetchInterval: 5000,
+      },
+    ),
   );
 
   useEffect(() => {
@@ -38,7 +45,7 @@ const ProjectMessageContainer = ({ projectId, activeFragment, setActiveFragment 
   }, [messages.length]);
 
   const lastMessage = messages[messages.length - 1];
-  const isLastMessageUser = lastMessage?.role === "USER";
+  const isLastMessageUser = lastMessage?.role === 'USER';
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
