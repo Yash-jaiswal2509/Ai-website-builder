@@ -92,7 +92,7 @@ const ProjectMessageForm = ({ projectId }: Props) => {
         />
 
         <div className="flex items-end justify-between gap-x-2 pt-2">
-          <div className="text=[10px] text-muted-foreground font-mono">
+          <div className="text-muted-foreground font-mono text-[10px]">
             <kbd className="bg-muted pointer-events-none ml-auto inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium select-none">
               <span>&#8984;</span>Enter
             </kbd>
