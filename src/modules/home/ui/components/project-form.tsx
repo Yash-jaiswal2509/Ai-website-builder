@@ -41,6 +41,10 @@ const ProjectForm = () => {
       },
       onError: (error) => {
         toast.error(error.message);
+
+        if (error.data?.code === 'UNAUTHORIZED') {
+          router.push('/sign-in');
+        }
       },
     }),
   );
