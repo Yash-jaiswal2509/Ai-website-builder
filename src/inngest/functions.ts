@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from '@/prompts';
 import { prisma } from '@/lib/prisma';
 import { parseAgentOutput } from '@/lib/utils';
+import { SANDBOX_TIMEOUT } from './types';
 
 interface AgentState {
   summary: string;
@@ -26,6 +27,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run('get-sandbox-id', async () => {
       const sandbox = await Sandbox.create('ai-website-builder-yash-test-3');
+      await sandbox.setTimeout(SANDBOX_TIMEOUT); // 30 minutes
       return sandbox.sandboxId;
     });
 
@@ -41,6 +43,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createdAt: 'desc',
           },
+          take: 5,
         });
 
         for (const message of messages) {
@@ -51,7 +54,7 @@ export const codeAgentFunction = inngest.createFunction(
           });
         }
 
-        return formattedMessages;
+        return formattedMessages.reverse();
       },
     );
 
@@ -214,7 +217,7 @@ export const codeAgentFunction = inngest.createFunction(
 
     const responseGenrator = createAgent({
       name: 'response-generator',
-      description: 'A respone generator',
+      description: 'A response generator',
       system: RESPONSE_PROMPT,
       model: openai({
         model: 'gpt-4o',
