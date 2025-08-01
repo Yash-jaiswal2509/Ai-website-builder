@@ -5,6 +5,8 @@ import ProjectMessageForm from './project-message-form';
 import { useEffect, useRef } from 'react';
 import { Fragment } from '@/generated/prisma';
 import ProjectMessageLoading from './project-message-loading';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 interface Props {
   projectId: string;
@@ -20,6 +22,7 @@ const ProjectMessageContainer = ({
   const trpc = useTRPC();
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastAssistantMessageIdRef = useRef<string | null>(null);
+  const isMobile = useIsMobile();
 
   const { data: messages } = useSuspenseQuery(
     trpc.messages.getMany.queryOptions(
@@ -41,14 +44,28 @@ const ProjectMessageContainer = ({
       lastAssistantMessage?.fragment &&
       lastAssistantMessage.id !== lastAssistantMessageIdRef.current
     ) {
-      setActiveFragment(lastAssistantMessage.fragment);
+      if (!isMobile) {
+        setActiveFragment(lastAssistantMessage.fragment);
+      }
       lastAssistantMessageIdRef.current = lastAssistantMessage.id;
     }
-  }, [messages, setActiveFragment]);
+  }, [messages, setActiveFragment, isMobile]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
   }, [messages.length]);
+
+  const handleFragmentClick = (fragment: Fragment | null) => {
+    if (isMobile) {
+      if (fragment?.sandboxUrl) {
+        window.open(fragment.sandboxUrl, '_blank');
+      } else {
+        toast.error('No preview available for this fragment.');
+      }
+    } else {
+      setActiveFragment(fragment);
+    }
+  };
 
   const lastMessage = messages[messages.length - 1];
   const isLastMessageUser = lastMessage?.role === 'USER';
@@ -60,12 +77,13 @@ const ProjectMessageContainer = ({
           {messages.map((message) => (
             <ProjectMessageCard
               key={message.id}
+              // projectId={projectId}
               content={message.content}
               role={message.role}
               fragment={message.fragment}
               createdAt={message.createdAt}
               isActiveFragment={activeFragment?.id === message.fragment?.id}
-              onFragmentClick={() => setActiveFragment(message.fragment)}
+              onFragmentClick={() => handleFragmentClick(message.fragment)}
               type={message.type}
             />
           ))}
