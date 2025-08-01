@@ -27,7 +27,7 @@ const ProjectMessageContainer = ({
         projectId: projectId,
       },
       {
-        refetchInterval: 5000,
+        refetchInterval: 2000,
       },
     ),
   );
