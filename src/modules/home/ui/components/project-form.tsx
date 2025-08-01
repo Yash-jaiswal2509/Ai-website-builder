@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormField } from '@/components/ui/form';
 import { useRouter } from 'next/navigation';
 import { PROJECT_TEMPLATES } from '../../constants';
+import { useUser } from '@clerk/nextjs';
 
 const formSchema = z.object({
   value: z
@@ -26,6 +27,7 @@ const ProjectForm = () => {
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const { isSignedIn } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,25 +44,24 @@ const ProjectForm = () => {
       },
       onError: (error) => {
         toast.error(error.message);
-
-        if (error.data?.code === 'UNAUTHORIZED') {
-          router.push('/sign-in');
-        }
-
         if (error.data?.code === 'TOO_MANY_REQUESTS') router.push('/pricing');
       },
     }),
   );
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  // const showUsage = false;
   const isPending = createProject.isPending;
   const isButtonDisabled = isPending || !form.formState.isValid;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await createProject.mutateAsync({
-      value: values.value,
-    });
+    if (!isSignedIn) {
+      localStorage.setItem('pending_prompt', values.value);
+      router.push('/sign-in');
+    } else {
+      await createProject.mutateAsync({
+        value: values.value,
+      });
+    }
   };
 
   const onSelect = (value: string) => {
